@@ -1,2 +1,2 @@
 # pyg-mongo-async
-pyg asynchronous mongo access 
+asynchronous mongo access 

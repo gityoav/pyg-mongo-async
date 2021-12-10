@@ -1,0 +1,23 @@
+package:
+    name: pyg-mongo-async
+    version: 0.0.1
+
+source:
+    path: ../src
+	
+build:
+    include_recipe: False
+    number: 0
+    noarch: python
+
+requirements:
+    build:
+        - pyg-mongo     >=0.0.3
+        - motor         >=2.3.0
+    run:
+        - pyg-mongo     >=0.0.3
+        - motor         >=2.3.0
+
+about:
+    home: https://github.com/gityoav/pyg-mongo-async
+    license: GNU
