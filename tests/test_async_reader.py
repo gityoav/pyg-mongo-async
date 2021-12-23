@@ -8,13 +8,13 @@ import pandas as pd
 
 
 def test_async_cursor_reader_writer():
-    cursor = mongo_table('test', 'test', mode = 'r', writer = False, reader = False, asynch = True)
+    cursor = mongo_table('test', 'test', mode = 'ar', writer = False, reader = False)
     assert cursor._writer() == [passthru]
     assert cursor._reader() == [passthru]
 
 
 def test_async_mongo_reader_spec_projection():
-    reader = mongo_table('test', 'test', mode = 'r', asynch = True)
+    reader = mongo_table('test', 'test', mode = 'ar')
     assert reader.projection is None    
     assert reader(projection = ['a','b']).projection == ['a', 'b']   
     assert not reader.spec 
@@ -26,7 +26,7 @@ def test_async_mongo_reader_spec_projection():
     
 
 def test_async_reader_is_no_writer():
-    reader = mongo_table('test', 'test', mode = 'r', asynch = True)
+    reader = mongo_table('test', 'test', mode = 'ar')
     with pytest.raises(AttributeError):
         reader.insert_one(dict(a =1))    
     with pytest.raises(AttributeError):
@@ -42,11 +42,11 @@ def test_async_reader_is_no_writer():
 
 @pytest.mark.asyncio
 async def test_async_mongo_reader__read():
-    t = mongo_table('test', 'test', pk = 'key', mode = 'w', asynch = True)
+    t = mongo_table('test', 'test', pk = 'key', mode = 'aw')
     await t.reset.drop()
     df = pd.Series([1,2])
     await t.insert_one(dict(key = 1, df = df))
-    reader = mongo_table('test', 'test', mode = 'r', asynch = True)
+    reader = mongo_table('test', 'test', mode = 'ar')
     raw = await reader.read(0, passthru)
     assert eq(reader._read(raw)['df'], df) ## now converted to df
     pair = await reader.read([0,0])
@@ -58,13 +58,13 @@ async def test_async_mongo_reader__read():
 
 @pytest.mark.asyncio
 async def test_async_mongo_reader_distinct():
-    t = mongo_table('test', 'test', pk = 'key', asynch = True)
+    t = mongo_table('test', 'test', pk = 'key', mode = 'aw')
     await t.reset.drop()
     await t.insert_one(dict(key = 'a'))
     await t.insert_one(dict(key = 1))
     await t.insert_one(dict(key = None))
     await t.insert_one(dict(key = dt(0)))
-    reader = mongo_table('test', 'test', mode = 'r', asynch = True)
+    reader = mongo_table('test', 'test', mode = 'ar')
 
     keys = await reader.distinct('key')
     for key in [None, dt(0), 1, 'a']:
